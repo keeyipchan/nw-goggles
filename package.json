@@ -1,0 +1,18 @@
+{
+  "main": "index.html",
+  "name": "nw-goggles",
+  "description": "Code Viewer GitHub, BitBucket, Google Code, local files",
+  "version": "0.1",
+  "keywords": [ "code viewer", "nw-goggles", "goggles", "node-webkit" ],
+  "window": {
+	"toolbar": false,
+    "width": 800,
+    "height": 500,
+    "position": "mouse",
+    "min_width": 400,
+    "min_height": 200
+  },
+  "webkit": {
+    "webgl-disabled": false
+  }
+}

@@ -1,0 +1,252 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<title>nw-goggles</title>
+	<link rel='stylesheet' href='basic.css'/>
+	<link rel='stylesheet' href='layout.css'/>
+	<link rel='stylesheet' href='decorations.css'/>
+	<link rel='stylesheet' href='behaviors.css'/>
+	<link rel='stylesheet' href='explainCode.css'/>
+	<style>
+	CodePanel {
+		display:block;
+		background:hsl(200,20%,90%);
+		padding: 4px;
+		margin: 0 0 8px 0;
+	}
+	CodePanel > Actions {
+		display: block;
+		font-size: 12px;
+	}
+	CodePanel > Actions a {
+		cursor: pointer;
+	}
+	CodePanel > Title {
+		display: block;
+		background:hsl(200,40%,40%);
+		color:white;
+		border-radius: 2px;
+		margin: 4px 0;
+		font-size: 12px;
+		padding: 4px;
+	}
+	Tree {
+		display:block;
+		-webkit-user-select:none;
+	}
+	Tree > Title {
+		display:inline-block;
+		cursor: pointer;
+		padding: 4px;
+		font-size: 12px;
+	}
+	Tree > Title:hover {
+		background:hsla(0,0%,100%,0.5);
+	}
+	Tree.Folder > Title {
+		font-weight: bold;
+	}
+	SubtreeContainer {
+		display:block;
+		margin-left: 20px;
+	}
+	</style>
+</head>
+<body>
+	<div id='EVERYTHING'>
+		<a class="AnchorButton" href="demo.html">Demo - <i><small>check me out!</small></i></a>
+		<div style="padding: 40px;font-size:14px">
+			<b>nw-goggles</b> is a desktop/web interface for reading code. It can read from github, bitbucket, google code, and your local filesystem.
+			You don't need to build docs, code comments are parsed and rendered client-side.
+			<ul style='margin:4px 0'>
+				<li>Disclaimer: this is just a prototype, when you click on a file, I parse the same code over again.. Just haven't got around to hooking it up with repo APIs.</li>
+				<li>Information from auxiliary tools should be an integral part of code reading: such as ctags, dependency graphs, call graphs, etc..</li>
+				<li>Code reading and navigation should be fun</li>
+			</ul>
+			<br/>
+			<div><a href="http://github.com/keeyipchan/nw-goggles">github/keeyipchan/nw-goggles</a></div>
+			<div><a href="http://bitbucket.org/keeyipchan">bitbucket/keeyipchan <small>(other experiments)</small></a></div>
+		</div>
+		<div id='scene'></div>
+	</div>
+
+<script src='basic.js'></script>
+<script src='layout.js'></script>
+<script src='decorations.js'></script>
+<script src='behaviors.js'></script>
+<script src='explainCode.js'></script>
+<script>
+function RowTpl() {
+	var root = createEl('Box', {'class':'UserPlacard'})
+
+	// Make 2 columns
+	var columns = createSubEls(root,'Box',2)
+	addClass(root, 'Total-Columns-2')
+	addClass(columns[0], 'Column Column-1')
+	addClass(columns[1], 'Column Column-2')
+
+	columns[0].innerHTML = '%col-1'
+	columns[1].innerHTML = '%col-2'
+
+	return root;
+}
+function LoginTpl() {
+	var root = createEl('Box', {'class':'Login'})
+
+	pushEl(root, Apply(RowTpl, {
+		'%col-1': 'GitHub usertitle',
+		'%col-2': '<input id="usertitle"/>'
+	}))
+	pushEl(root, Apply(RowTpl, {
+		'%col-1': 'Password',
+		'%col-2': '<input type="password"/>'
+	}))
+
+	return root;
+}
+function RepoTpl() {
+	var root = createEl('Box', {'class':'Repo'})
+
+	pushEl('input', {type:'url', placeholder:'http://github.com/[project]/[project]'})
+
+	return root
+}
+function TreeTpl() {
+	var root = createEl('Tree')
+
+	var title = createEl('Title', {'data-path':'%path'}, '%title')
+	var subtree = createEl('SubtreeContainer')
+	pushEl(root, title)
+	pushEl(root, subtree)
+
+	clickToToggle(title, subtree, true)
+
+	return root;
+}
+function HistoryTpl() {
+}
+
+function fetch_content(path, f) {
+	f.call(ui.BrowseRepo.toString())
+}
+
+var ui = {
+	scene: document.querySelector('#scene'),
+	repo: {
+		title: 'Example 1'
+	},
+	tree: [
+		{title:"index.php", type:"php"},
+		{title:"js", type:"folder", tree: [
+			{title:"main.js", type:"js"},
+			{title:"el.js", type:"js"},
+			{title:"util.js", type:"js"},
+			{title:"math.js", type:"js"},
+			{title:"text.js", type:"js"},
+			{title:"selection.js", type:"js"},
+			{title:"validation.js", type:"js"},
+			{title:"vendor", type:"folder", tree: [
+				{title:"io.js", type:"js"},
+				{title:"svg.js", type:"js"},
+			]},
+		]},
+		{title:"css", type:"folder", tree: [
+			{title:"decoration.css", type:"css"},
+			{title:"layout.css", type:"css"},
+			{title:"font.css", type:"css"},
+			{title:"spacing.css", type:"css"},
+			{title:"color.css", type:"css"},
+		]}
+	],
+
+	Startup: function() {
+		ui.BrowseRepo();
+	},
+	NotLoggedIn: function() {
+	},
+	LoggingIn: function() {
+	},
+	ChooseRepo: function() {
+	},
+	BrowseRepo: function() {
+		var simpl = '';
+		function makeTreeNode(parentNode, tree, depth) {
+			var frag = document.createDocumentFragment()
+			var debounceReady = debounce(1000, ready)
+			each(tree, function() {
+				if (this.type == 'folder') {
+					var el = Apply(TreeTpl, {'%title':this.title + '/', '%path':this.title})
+					addClass(el, 'Folder')
+					var subtree = el.querySelector('SubtreeContainer')
+					if (depth < 2) {
+						swapClass(subtree, 'Hidden', 'Visible')
+					}
+					pushEl(frag, el)
+
+					// Let the browser rest
+					var t = this.tree
+					setTimeout(function() {
+						makeTreeNode(subtree, t, depth + 1)
+						debounceReady()
+					}, 0)
+				} else {
+					var el = Apply(TreeTpl, {'%title':this.title, '%path':this.title})
+					var title = el.querySelector('Title')
+					addClass(title, 'ClickToOpen')
+					simpl = toSimpl(title)
+					pushEl(frag, el)
+				}
+			})
+			pushEl(parentNode, frag)
+			return parentNode
+		}
+
+		var root = Apply(TreeTpl, {'%title':ui.repo.title + '/'})
+		addClass(root, 'Folder')
+		var rootSubtree = root.querySelector('SubtreeContainer')
+		swapClass(rootSubtree, 'Hidden', 'Visible')
+		makeTreeNode(rootSubtree, ui.tree, 1)
+		pushEl(ui.scene, root)
+
+		var readyCalled = false
+		function ready() {
+			if (readyCalled)
+				return
+			readyCalled = true
+			delegate(document.body, 'click', simpl, function(event) {
+				ui.path = this.getAttribute('data-path')
+				fetch_content(ui.path, function() {
+					ui.code = this
+					ui.ViewCode();
+				})
+			})
+		}
+	},
+	ViewCode: function() {
+		if (ui.panel)
+			EVERYTHING.removeChild(ui.panel)
+		var actions = createEl('Actions', {}, '<a class="Close">Close</a>')
+		var title = createEl('Title', {}, ui.path)
+		ui.panel = createEl('CodePanel')
+		pushEl(ui.panel, actions)
+		pushEl(ui.panel, title)
+		explainCode(ui.panel, ui.code)
+		EVERYTHING.insertBefore(ui.panel, EVERYTHING.firstChild)
+
+		ui.panel.scrollIntoView();
+
+		delegate(actions, 'click', toSimpl(actions.querySelector('a.Close')), function(event) {
+			EVERYTHING.removeChild(ui.panel)
+			ui.panel = null;
+		})
+	}
+}
+
+ui.Startup();
+
+START()
+</script>
+</body>
+</html>

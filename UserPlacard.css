@@ -1,0 +1,53 @@
+.UserPlacard {
+	background: hsl(50,80%,95%);
+	border-radius: 8px 0 8px 8px;
+	box-shadow: 0 1px 2px hsla(0,0%,0%,0.4);
+	margin: 4px;
+}
+.UserPlacard .Column {
+	border-radius: 8px;
+}
+.UserPlacard .Column-2 {
+	padding: 4px;
+}
+.UserPlacard Badge,
+.UserPlacard MemberSince {
+	display: block;
+}
+.UserPlacard Badge {
+	box-shadow: inset 1px 1px 3px hsla(0,0%,50%,0.5);
+	min-height: 10px;
+	position: relative;
+	border-radius: 8px;
+	margin: 4px 0;
+	background: hsl(0,0%,90%);
+}
+.UserPlacard Badge ProgressMeter {
+	box-shadow: inset 1px 1px 3px hsla(0,0%,50%,0.5);
+	display:block;
+	border-radius: 8px 0 0 8px;
+	background: yellow;
+	border-radius: 8px;
+
+	position: absolute;
+	top:0;
+	bottom:0;
+	left:0;
+}
+.UserPlacard Badge.seniority_admin ProgressMeter {
+	width: 100%;
+}
+.UserPlacard Badge.seniority_moderator ProgressMeter {
+	width: 50%;
+}
+.UserPlacard MemberSince {
+	display: block;
+	min-height: 10px;
+	font-size: 10px;
+	color: hsl(0,0%,60%);
+}
+.UserPlacard .UsernameLink {
+	font-size: 12px;
+	vertical-align:top;
+}
+
