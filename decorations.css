@@ -1,0 +1,25 @@
+MenuButton.TopRight {
+	margin-top: 2px;
+	/* Make the hover hotspot larger for usability */
+	padding: 0 4px 4px 4px;
+	/*outline: solid 2px red;*/
+}
+MenuButton:hover {
+	cursor: pointer;
+}
+MenuButton:hover TrianglePointingDown {
+	border-top: solid 6px hsl(50,50%,50%);
+}
+
+TrianglePointingDown {
+	width:0;
+	height:0;
+	display:block;
+	border-top: solid 6px hsl(200,50%,50%);
+	border-left: solid 6px transparent;
+	border-right: solid 6px transparent;
+}
+
+.AnchorButton {
+	position:fixed;top:0;right:20px;background:white;border-radius:0 0 4px 4px; padding: 4px; box-shadow: 0 2px 3px gray, inset 1px 1px 3px rgba(0, 0, 0, 0.2);
+}

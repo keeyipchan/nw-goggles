@@ -1,0 +1,74 @@
+.ExplainCode {
+	color: hsl(0,0%,50%);
+	font-family: verdana;
+	font-size:12px;
+	line-height: 1.4;
+	padding: 0 4px;
+	margin:0;
+}
+.ExplainCode comment {
+	font-size: 14px;
+	background:white;
+	border-radius: 2px;
+	display:inline-block;
+	padding:2px;
+	margin-bottom: 2px;
+	box-shadow: 0 1px 3px hsla(0,0%,0%,0.3);
+	max-width: 400px;
+	white-space: normal;
+}
+.ExplainCode img {
+	display:inline-block;
+	width:20px;
+	height:20px;
+	vertical-align:middle;
+}
+.ExplainCode img:hover {
+	width:80px;
+	height: auto;
+}
+.ExplainCode file {
+	color: hsl(200,80%,50%);
+	font-family: monospace;
+	font-weight: normal;
+	font-style: normal;
+	padding: 0 2px;
+	font-size: 11px;
+}
+.ExplainCode snippet {
+	color: hsl(30,80%,50%);
+	font-family: monospace;
+	font-weight: normal;
+	font-style: normal;
+	padding: 0 2px;
+	font-size: 11px;
+}
+.ExplainCode note {
+	background: hsl(200,20%,50%);
+	color: white;
+	font-weight: normal;
+	padding: 0 4px;
+	border-radius: 40px;
+	text-align:center;
+}
+.ExplainCode keyword {
+	background: hsl(30,10%,50%);
+	color: white;
+	font-weight: normal;
+	padding: 0 2px;
+}
+.ExplainCode highlight {
+	background: hsl(30,80%,50%);
+	color: white;
+	font-weight: normal;
+	padding: 0 2px;
+}
+
+h4 {
+	border-top: dashed 1px hsla(0,0%,0%, 0.2);
+	font-weight: normal;
+	border-radius: 20px;
+	padding: 0 10px;
+	margin: 20px 0 0 0;
+}
+

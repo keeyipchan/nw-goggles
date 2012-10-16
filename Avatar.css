@@ -1,0 +1,29 @@
+.Avatar img {
+	display:block;
+	margin:0;
+	padding:0;
+	width:100%;
+	height:100%;
+	border-radius: 6px;
+}
+
+MessageList Message .Avatar {
+	width:30px;
+	height:30px;
+	overflow: hidden;
+	display:inline-block;
+	vertical-align:middle;
+	position:relative;
+	border-radius:4px 0 0 4px;
+	padding: 4px;
+}
+
+.UserPlacard .Avatar {
+	width:60px;
+	height:60px;
+	overflow: hidden;
+	display:block;
+	position:relative;
+	border-radius:4px 0 0 4px;
+	padding: 4px;
+}

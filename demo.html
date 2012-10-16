@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<title>Demo</title>
+	<link rel='stylesheet' href='basic.css'/>
+	<link rel='stylesheet' href='layout.css'/>
+	<link rel='stylesheet' href='decorations.css'/>
+	<link rel='stylesheet' href='behaviors.css'/>
+	<link rel='stylesheet' href='Avatar.css'/>
+	<link rel='stylesheet' href='UserPlacard.css'/>
+	<link rel='stylesheet' href='UserMenu.css'/>
+	<link rel='stylesheet' href='ChatMessage.css'/>
+	<link rel='stylesheet' href='explainCode.css'/>
+</head>
+<body>
+	<div id='EVERYTHING'>
+		<a class="AnchorButton" href="index.html">Back</a>
+
+		<Rants>
+		<Block>
+		<h2>Rant 1 - I don't like to read markup</h2>
+		Hand-writing markup is time-consuming, error-prone, and results in further tedious maintenance.
+		Eventually, significant refactoring arises because app needs to:
+		<ul>
+		<li>Support new HTML features</li>
+		<li>Deprecate support for old HTML features or browsers</li>
+		<li>Add new app ui features</li>
+		<li>Remove old app ui features</li>
+		</ul>
+
+		<h3>Proposal</h3>
+		<ol>
+		<li>Developer writes short <b>templates</b> in JS, sprinkled lightly with html-ish DSL; organized into sensible directory structure, utilized by a <b>PhantomJS parser script</b>; <b>Developer</b> can preview ui components and scenarios in the <b>browser</b> or <b>node-webkit</b> without needing to rely on the server</li>
+		<li>Developer can write <b>transforms</b> in JS to adjust for evolving needs; great for fast prototyping, live-coding with designers</li>
+		<li>Build machine uses <b>PhantomJS</b> to parse templates, generates server-language optimized templates; no manual intervention needed, no time wasted refactoring sea-of-markup; can generate dependency graphs and scenario screenshots; can report markup that offends styleguide, spelling, deprecation rules, accessibility rules, security rules, etc..</li>
+		<li>Same code can be used for client and server, just write an adapter for the <b>PhantomJS parser script</b> that generates your target language</li>
+		</ol>
+
+		<h2>Rant 2 - Code should be fun to read, at least not painful</h2>
+		Code is ultimately literature, meant for people to read.
+		A codebase is basically a wiki.
+		<ul>
+			<li>I like code formatted to my preference</li>
+			<li>We can do better than plain text</li>
+			<li>Reading and navigating code is harder than writing code</li>
+		</ul>
+		<h3>Proposal</h3>
+		<ol>
+			<li>Transform code to ease reading and navigation</li>
+			<li>Use css for styling code to your preference</li>
+			<li>Significant code diffs should be accompanied by changes to ctags structure, call graphs, dependency graphs, test results; a step above plain text, like GitHub image diffs</li>
+			<li>See demo for an attempt at literate programming</li>
+		</ol>
+
+		<h2>Demo - Chat ui</h2>
+		This is just a simple mockup to test some of these ideas. Disclaimer: code is not cleaned up, not optimized either.
+		<ul>
+			<li>Click the triangle for a user menu</li>
+			<li>You can type messages</li>
+			<li>Use <b>Safari</b> or <b>Chrome</b></li>
+		</ul>
+		</Block>
+		</Rants>
+		<div id='DEMO'></div>
+	</div>
+
+<script src='basic.js'></script>
+<script src='layout.js'></script>
+<script src='decorations.js'></script>
+<script src='behaviors.js'></script>
+<script src='explainCode.js'></script>
+<script src='UserPlacard.js'></script>
+<script src='UserMenu.js'></script>
+<script src='ChatMessage.js'></script>
+<script>
+(function() {
+	function main() {
+		//Disclaimer: semicolons annoy me, no biggie, right?
+		;
+
+		//Constants. You can mouseover images ;)
+		//Disclaimer: These are ripped from google image search...
+		var kycImg = 'Spider-Man-Shattered-Dimensions.png'
+		var testerImg = 'charles-xavier.jpg'
+		var DEMO = document.querySelector('#DEMO')
+
+		// List members in the chatroom
+		pushEl(DEMO, Apply(UserPlacardTpl, {
+			'%avatar_img':kycImg,
+			'%profile_url':'javascript:false',
+			'%seniority': 'admin',
+			'%username': 'kyc',
+			'%time': 'Dec 16, 1985'}))
+		pushEl(DEMO, Apply(UserPlacardTpl, {
+			'%avatar_img':testerImg,
+			'%profile_url':'javascript:false',
+			'%seniority': 'moderator',
+			'%username': 'tester',
+			'%time': 'Dec 16, 1985'}))
+
+
+		// Create an element to hold chat messages
+		var messages = createEl('MessageList')
+		pushEl(DEMO, messages)
+
+		// Create the input box; a container is needed due to applying `position:absolute` on the input, see ChatEditor.css
+		var editor = createEl('ChatEditor')
+		var input = createEl('input', {'class':'Chat', placeholder:'...'})
+		pushEl(editor, input)
+		pushEl(DEMO, editor)
+
+		// Just some helpers to avoid repeating myself
+		function newMessage(params) {
+			var d = new Date()
+			var h = d.getHours()
+			var m = d.getMinutes()
+			if (m < 10)
+				m = '0' + m
+			params['%time'] = (h%12) + ':' + m + (h > 12 ? ' pm' : ' am')
+			params['%profile_url'] = 'javascript:false'
+			pushEl(messages, Apply(ChatMessageTpl, params))
+		}
+		function testerSay(text) {
+			newMessage({
+				'%avatar_img': testerImg,
+				'%username': 'tester',
+				'%text': text
+			})
+		}
+		function kycSay(text) {
+			newMessage({
+				'%avatar_img': kycImg,
+				'%username': 'kyc',
+				'%text': text
+			})
+		}
+
+		// Add sample messages so the page doesn't look bland.
+		kycSay('Hi there')
+		testerSay('Hello! How are you?')
+
+		// You play the role of <img src="Spider-Man-Shattered-Dimensions.png"/> <br/>After each message, `input.focus()` for convenience
+		onPressEnter(input, function(event) {
+			var val = input.value
+			if (!val)
+				return
+
+			kycSay(val.replace(/</mg,'&lt;').replace(/>/mg,'&gt;'))
+
+			input.value = ''
+			input.focus();
+		})
+
+		// See basic.js; calls any startup procedures queued-up in `ON_START`
+		START();
+	}
+
+	main()
+
+	explainFunction(DEMO, main)
+	explainFunction(DEMO, UserPlacardTpl)
+	explainFunction(DEMO, UserPlacard_transforms)
+	explainFunction(DEMO, clickToToggle)
+	explainFunction(DEMO, toSimpl)
+})()
+</script>
+</body>
+</html>

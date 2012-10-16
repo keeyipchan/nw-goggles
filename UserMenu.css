@@ -1,0 +1,28 @@
+UserMenu {
+	background: hsl(50,80%,95%);
+	border: solid 1px hsl(0,0%,70%);
+	padding: 4px;
+	border-radius: 4px;
+}
+
+UserMenu MenuItem {
+	display: block;
+	margin-top: 4px;
+}
+UserMenu MenuItem:first-child {
+	margin-top:0;
+}
+UserMenu MenuItem a {
+	display: block;
+	cursor: pointer;
+	font-size: 12px;
+}
+UserMenu MenuItem a:hover {
+	background: hsl(200,20%,90%);
+}
+
+.UserPlacard UserMenu {
+	position: absolute;
+	top:8px;
+	right:0;
+}
